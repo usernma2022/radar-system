@@ -3,16 +3,16 @@
 local files = {
 
     ["main.lua"] =
-    "https://YOUR_RAW_LINK/main.lua",
+    "https://raw.githubusercontent.com/usernma2022/radar-system/refs/heads/main/main",
 
     ["config.lua"] =
-    "https://YOUR_RAW_LINK/config.lua",
+    "https://raw.githubusercontent.com/usernma2022/radar-system/refs/heads/main/config",
 
     ["radar.lua"] =
-    "https://YOUR_RAW_LINK/radar.lua",
+    "https://raw.githubusercontent.com/usernma2022/radar-system/refs/heads/main/radar",
 
     ["network.lua"] =
-    "https://YOUR_RAW_LINK/network.lua"
+    "https://raw.githubusercontent.com/usernma2022/radar-system/refs/heads/main/network"
 
 }
 
