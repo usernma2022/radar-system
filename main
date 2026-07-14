@@ -1,0 +1,20 @@
+-- Tactical Radar Main Controller
+
+
+local radar = require("radar")
+local network = require("network")
+
+
+
+parallel.waitForAny(
+
+    radar.start,
+
+
+    network.receive,
+
+
+    network.transmit
+
+
+)
