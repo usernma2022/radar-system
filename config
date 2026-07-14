@@ -1,0 +1,94 @@
+-- Tactical Radar Configuration
+
+
+local config = {}
+
+
+------------------------------------------------
+-- RADAR IDENTITY
+------------------------------------------------
+
+config.RADAR_ID = "HQ_MAIN"
+
+
+-- Real world position of this radar
+config.RADAR_X = 0
+config.RADAR_Z = 0
+
+
+
+------------------------------------------------
+-- SENSOR SETTINGS
+------------------------------------------------
+
+-- Server maximum detection range
+config.RADAR_RANGE = 192
+
+
+
+------------------------------------------------
+-- DISPLAY SETTINGS
+------------------------------------------------
+
+config.DEFAULT_ZOOM = 192
+
+
+config.ZOOM_LEVELS = {
+
+    64,
+    96,
+    192,
+    256,
+    384,
+    512,
+    1024
+
+}
+
+
+
+------------------------------------------------
+-- NETWORK SETTINGS
+------------------------------------------------
+
+config.NETWORK_CHANNEL = 10
+
+config.NETWORK_REPLY = 11
+
+
+-- How long until remote contacts disappear
+config.CONTACT_TIMEOUT = 5
+
+
+
+------------------------------------------------
+-- COLORS
+------------------------------------------------
+
+config.COLORS = {
+
+
+    background = colors.black,
+
+    grid = colors.gray,
+
+    radar = colors.cyan,
+
+    sweep = colors.green,
+
+
+    player = colors.green,
+
+    name = colors.white,
+
+    distance = colors.lightGray,
+
+
+    remote = colors.yellow
+
+
+}
+
+
+
+return config
