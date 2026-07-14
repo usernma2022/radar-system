@@ -1,0 +1,40 @@
+-- Tactical Radar Installer
+
+local files = {
+
+    ["main.lua"] =
+    "https://YOUR_RAW_LINK/main.lua",
+
+    ["config.lua"] =
+    "https://YOUR_RAW_LINK/config.lua",
+
+    ["radar.lua"] =
+    "https://YOUR_RAW_LINK/radar.lua",
+
+    ["network.lua"] =
+    "https://YOUR_RAW_LINK/network.lua"
+
+}
+
+
+
+print("Installing Tactical Radar...")
+
+
+for name,url in pairs(files) do
+
+    print("Downloading "..name)
+
+    shell.run(
+        "wget",
+        url,
+        name
+    )
+
+end
+
+
+
+print("")
+print("Radar installation complete.")
+print("Run: main.lua")
