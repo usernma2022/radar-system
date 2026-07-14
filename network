@@ -1,0 +1,192 @@
+-- Tactical Radar Network Module
+
+
+local config = require("config")
+
+local network = {}
+
+
+local modem = peripheral.find("modem")
+
+
+local contacts = {}
+
+
+
+function network.setContacts(table)
+
+    contacts = table
+
+end
+
+
+
+------------------------------------------------
+-- RECEIVE
+------------------------------------------------
+
+function network.receive()
+
+
+    if not modem then
+
+        while true do
+            sleep(60)
+        end
+
+    end
+
+
+
+    modem.open(
+        config.NETWORK_CHANNEL
+    )
+
+
+
+    while true do
+
+
+        local _,side,channel,reply,message =
+            os.pullEvent("modem_message")
+
+
+
+        if channel == config.NETWORK_CHANNEL then
+
+
+
+            if type(message)=="table"
+            and message.id
+            and message.id ~= config.RADAR_ID then
+
+
+
+                for _,contact in ipairs(message.contacts or {}) do
+
+
+                    table.insert(
+                        contacts,
+                        {
+
+                            type = contact.type,
+
+                            name = contact.name,
+
+
+                            source = message.id,
+
+
+                            x = contact.x-config.RADAR_X,
+
+                            z = contact.z-config.RADAR_Z,
+
+
+                            time = os.clock()
+
+                        }
+                    )
+
+
+                end
+
+
+            end
+
+
+        end
+
+
+    end
+
+end
+
+
+
+------------------------------------------------
+-- TRANSMIT
+------------------------------------------------
+
+function network.transmit()
+
+
+    while true do
+
+
+        if modem then
+
+
+            local packet = {
+
+
+                id = config.RADAR_ID,
+
+
+                x = config.RADAR_X,
+
+                z = config.RADAR_Z,
+
+
+                contacts = {}
+
+            }
+
+
+
+            for _,c in ipairs(contacts) do
+
+
+                if c.source == config.RADAR_ID then
+
+
+                    table.insert(
+
+                        packet.contacts,
+
+                        {
+
+                            type = c.type,
+
+                            name = c.name,
+
+
+                            x = c.x + config.RADAR_X,
+
+                            z = c.z + config.RADAR_Z
+
+                        }
+
+                    )
+
+                end
+
+
+            end
+
+
+
+            modem.transmit(
+
+                config.NETWORK_CHANNEL,
+
+                config.NETWORK_REPLY,
+
+                packet
+
+            )
+
+
+        end
+
+
+
+        sleep(1)
+
+
+    end
+
+end
+
+
+
+return network
