@@ -1,0 +1,330 @@
+-- Tactical Radar Display Module
+
+
+local config = require("config")
+
+
+local radar = {}
+
+
+
+local monitor =
+    peripheral.find("monitor")
+
+
+local detector =
+    peripheral.find("playerDetector")
+
+
+
+if not monitor then
+    error("Monitor missing")
+end
+
+
+if not detector then
+    error("Player Detector missing")
+end
+
+
+
+monitor.setTextScale(0.5)
+
+
+
+local W,H =
+    monitor.getSize()
+
+
+
+local contacts = {}
+
+
+
+local zoom =
+    config.DEFAULT_ZOOM
+
+
+
+local sweep =
+    0
+
+
+
+------------------------------------------------
+-- CONTACTS
+------------------------------------------------
+
+
+local function updateContacts()
+
+
+    local keep={}
+
+
+
+    for _,c in ipairs(contacts) do
+
+
+        if c.source ~= config.RADAR_ID then
+
+            table.insert(
+                keep,
+                c
+            )
+
+        end
+
+
+    end
+
+
+
+    contacts=keep
+
+
+
+    local players =
+        detector.getPlayersInRange(
+            config.RADAR_RANGE
+        )
+
+
+
+    for _,name in ipairs(players) do
+
+
+        if detector.isPlayerInRange(
+            config.RADAR_RANGE,
+            name
+        ) then
+
+
+
+            local pos =
+                detector.getPlayerPos(name)
+
+
+
+            if pos then
+
+
+                table.insert(
+
+                    contacts,
+
+                    {
+
+                        type="PL",
+
+                        name=name,
+
+
+                        source=config.RADAR_ID,
+
+
+                        x=pos.x-config.RADAR_X,
+
+
+                        z=pos.z-config.RADAR_Z
+
+                    }
+
+                )
+
+            end
+
+        end
+
+    end
+
+end
+
+
+
+------------------------------------------------
+-- DRAWING
+------------------------------------------------
+
+
+local function draw()
+
+
+    monitor.clear()
+
+
+    monitor.setCursorPos(1,1)
+
+
+    monitor.setTextColor(
+        config.COLORS.radar
+    )
+
+
+    monitor.write(
+        "+"
+    )
+
+
+    -- contacts
+
+    for _,c in ipairs(contacts) do
+
+
+        local x =
+            math.floor(
+                W/2+
+                c.x*(W/2)/zoom
+            )
+
+
+        local y =
+            math.floor(
+                H/2-
+                c.z*(H/2)/zoom
+            )
+
+
+
+        if c.type=="PL" then
+
+
+            monitor.setCursorPos(
+                x,
+                y
+            )
+
+
+            monitor.setTextColor(
+                config.COLORS.player
+            )
+
+
+            monitor.write(
+                "+"
+            )
+
+
+
+            monitor.setCursorPos(
+                x+2,
+                y
+            )
+
+
+            monitor.setTextColor(
+                config.COLORS.name
+            )
+
+
+            monitor.write(
+                c.name
+            )
+
+
+        end
+
+
+    end
+
+
+end
+
+
+
+------------------------------------------------
+-- INPUT
+------------------------------------------------
+
+
+local function input()
+
+
+    while true do
+
+
+        local _,_,x,y =
+            os.pullEvent(
+                "monitor_touch"
+            )
+
+
+
+        if y==H then
+
+
+            if x<5 then
+
+
+                zoom =
+                    math.min(
+                        zoom*2,
+                        1024
+                    )
+
+
+            elseif x>W-5 then
+
+
+                zoom =
+                    math.max(
+                        zoom/2,
+                        64
+                    )
+
+            end
+
+
+        end
+
+
+    end
+
+end
+
+
+
+------------------------------------------------
+-- START
+------------------------------------------------
+
+
+function radar.start()
+
+
+    parallel.waitForAny(
+
+        function()
+
+            while true do
+
+                updateContacts()
+
+                draw()
+
+                sweep=sweep+5
+
+                sleep(0.2)
+
+            end
+
+        end,
+
+
+        input
+
+    )
+
+end
+
+
+
+function radar.getContacts()
+
+    return contacts
+
+end
+
+
+
+return radar
